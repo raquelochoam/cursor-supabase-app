@@ -6,7 +6,7 @@ Modify: Update PredictionInput fields to match your model's expected input featu
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, Field
 
@@ -26,3 +26,4 @@ class PredictionOutput(BaseModel):
     confidence: float = Field(ge=0, le=1)
     label: str = ""
     timestamp: datetime = Field(default_factory=datetime.utcnow)
+    probabilities: Optional[Dict[str, float]] = None
