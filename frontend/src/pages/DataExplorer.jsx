@@ -12,26 +12,42 @@ import LoadingSpinner from '../components/ui/LoadingSpinner'
 // TODO: Replace with your Supabase table name
 const TABLE_NAME = 'students'
 
-// TODO: Define columns matching your table. { key, label, sortable }
+// Columns matching Supabase `students` table / CSV headers
+// { key, label, sortable }
 const COLUMNS = [
   { key: 'id', label: 'ID', sortable: true },
-  { key: 'name', label: 'Name', sortable: true },
-  { key: 'category', label: 'Category', sortable: true },
-  { key: 'value', label: 'Value', sortable: true },
-  { key: 'created_at', label: 'Created', sortable: true },
+  { key: 'gender', label: 'Gender', sortable: true },
+  { key: 'ethnicity', label: 'Ethnicity', sortable: true },
+  { key: 'parental_education', label: 'Parental Education', sortable: true },
+  { key: 'lunch', label: 'Lunch', sortable: true },
+  { key: 'test_prep', label: 'Test Preparation', sortable: true },
+  { key: 'math_score', label: 'Math Score', sortable: true },
+  { key: 'reading_score', label: 'Reading Score', sortable: true },
+  { key: 'writing_score', label: 'Writing Score', sortable: true },
+  { key: 'pass_math', label: 'Pass Math', sortable: true },
 ]
 
-// TODO: Configure filters to match your schema
+// Filters aligned with `students` schema
 const FILTER_CONFIG = [
   {
-    key: 'category',
-    label: 'Category',
+    key: 'ethnicity',
+    label: 'Ethnicity',
     type: 'select',
     options: [
       { value: '', label: 'All' },
-      { value: 'A', label: 'A' },
-      { value: 'B', label: 'B' },
-      { value: 'C', label: 'C' },
+      { value: 'group A', label: 'Group A' },
+      { value: 'group B', label: 'Group B' },
+      { value: 'group C', label: 'Group C' },
+    ],
+  },
+  {
+    key: 'pass_math',
+    label: 'Math pass',
+    type: 'select',
+    options: [
+      { value: '', label: 'All' },
+      { value: '1', label: 'Pass (1)' },
+      { value: '0', label: 'Fail (0)' },
     ],
   },
 ]
