@@ -17,7 +17,7 @@ import { aggregateByKey, formatForPieChart } from '../utils/dataTransformers'
 // TODO: Define these in a config file or env. Use your actual Supabase table name.
 const APP_CONFIG = {
   title: import.meta.env.VITE_APP_TITLE || 'Data App',
-  tableName: 'sample_data', // Replace with your Supabase table name
+  tableName: 'students', // Replace with your Supabase table name
 }
 
 // Placeholder data for layout before real data is connected

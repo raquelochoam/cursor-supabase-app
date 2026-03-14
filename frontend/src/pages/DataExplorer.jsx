@@ -10,7 +10,7 @@ import DataTable from '../components/ui/DataTable'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 
 // TODO: Replace with your Supabase table name
-const TABLE_NAME = 'sample_data'
+const TABLE_NAME = 'students'
 
 // TODO: Define columns matching your table. { key, label, sortable }
 const COLUMNS = [
