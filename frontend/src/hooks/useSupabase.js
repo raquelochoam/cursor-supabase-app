@@ -44,7 +44,17 @@ export function useSupabase(tableName, filters = {}, order = null, limit = null)
 
       // Apply filters
       Object.entries(filters).forEach(([key, value]) => {
-        if (value != null && value !== '') {
+        if (value == null || value === '') return
+
+        // Support simple equality filters and numeric ranges (e.g. { min, max })
+        if (typeof value === 'object' && (value.min != null || value.max != null)) {
+          if (value.min != null) {
+            query = query.gte(key, value.min)
+          }
+          if (value.max != null) {
+            query = query.lte(key, value.max)
+          }
+        } else {
           query = query.eq(key, value)
         }
       })

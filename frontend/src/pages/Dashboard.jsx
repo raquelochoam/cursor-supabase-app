@@ -1,112 +1,279 @@
 /**
- * Dashboard - Main dashboard page.
- * Purpose: Overview KPIs and charts. Uses placeholder data until Supabase is connected.
- * Modify: Replace TODO sections with real useSupabase calls.
+ * Dashboard - EduInsights main dashboard.
+ * Purpose: Executive overview with KPIs and charts based on the `students` table.
  */
 import {
-  BarChartWidget,
-  LineChartWidget,
   PieChartWidget,
-  ScatterChartWidget,
+  HorizontalBarChartWidget,
+  GroupedBarChartWidget,
+  CategoryScatterChartWidget,
 } from '../components/charts'
 import KpiCard from '../components/ui/KpiCard'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import { useSupabase } from '../hooks/useSupabase'
-import { aggregateByKey, formatForPieChart } from '../utils/dataTransformers'
+import { aggregateByKey } from '../utils/dataTransformers'
+import styles from './Dashboard.module.css'
 
-// TODO: Define these in a config file or env. Use your actual Supabase table name.
 const APP_CONFIG = {
-  title: import.meta.env.VITE_APP_TITLE || 'Data App',
-  tableName: 'students', // Replace with your Supabase table name
+  title: 'EduInsights',
+  tableName: 'students',
 }
 
-// Placeholder data for layout before real data is connected
-const MOCK_KPIS = [
-  { title: 'Total Items', value: '1,234', subtitle: 'Last 30 days', icon: '📊', trend: 12.5 },
-  { title: 'Revenue', value: '$12,450', subtitle: 'This month', icon: '💰', trend: -2.3 },
-  { title: 'Active Users', value: '89', subtitle: 'Online now', icon: '👥', trend: 8.1 },
-  { title: 'Conversion', value: '4.2%', subtitle: 'Overall', icon: '📈', trend: 0.5 },
-]
-
-// TODO: Replace with real data from useSupabase. Mock data for layout demo.
-const MOCK_BAR = [
-  { category: 'A', value: 120 },
-  { category: 'B', value: 200 },
-  { category: 'C', value: 150 },
-  { category: 'D', value: 80 },
-]
-const MOCK_LINE = [
-  { month: 'Jan', value: 100 },
-  { month: 'Feb', value: 120 },
-  { month: 'Mar', value: 115 },
-  { month: 'Apr', value: 140 },
-]
-const MOCK_PIE = [
-  { name: 'Type A', value: 400 },
-  { name: 'Type B', value: 300 },
-  { name: 'Type C', value: 200 },
-]
-const MOCK_SCATTER = [
-  { x: 1, y: 10 },
-  { x: 2, y: 20 },
-  { x: 3, y: 15 },
-  { x: 4, y: 25 },
-]
+function formatNumber(value, decimals = 0) {
+  if (value == null || Number.isNaN(value)) return '-'
+  return value.toLocaleString(undefined, {
+    maximumFractionDigits: decimals,
+    minimumFractionDigits: decimals,
+  })
+}
 
 export default function Dashboard() {
-  // TODO: Uncomment and use when Supabase is connected. Pass filters if needed.
-  // const { data, loading, error, refetch } = useSupabase(APP_CONFIG.tableName)
+  const { data, loading, error, refetch } = useSupabase(APP_CONFIG.tableName)
 
-  const loading = false
-  const error = null
-  const data = []
+  const totalStudents = data.length
 
-  // Use mock data if no real data yet
-  const barData = data.length ? aggregateByKey(data, 'category', 'value', 'sum') : MOCK_BAR
-  const lineData = data.length ? aggregateByKey(data, 'month', 'value', 'avg') : MOCK_LINE
-  const pieData = data.length ? formatForPieChart(data, 'name', 'value') : MOCK_PIE
-  const scatterData = data.length ? data : MOCK_SCATTER
+  const mathAverage =
+    totalStudents > 0
+      ? data.reduce((sum, row) => sum + (row.math_score || 0), 0) / totalStudents
+      : null
 
-  if (error) {
-    return <div>Error loading data: {error.message}</div>
-  }
+  const passRate =
+    totalStudents > 0
+      ? (data.reduce((sum, row) => sum + (row.pass_math || 0), 0) / totalStudents) * 100
+      : null
+
+  const prepGroups = data.reduce(
+    (acc, row) => {
+      const key = row.test_prep === 'completed' ? 'completed' : 'none'
+      acc[key].sum += row.math_score || 0
+      acc[key].count += 1
+      return acc
+    },
+    {
+      completed: { sum: 0, count: 0 },
+      none: { sum: 0, count: 0 },
+    }
+  )
+
+  const avgCompleted =
+    prepGroups.completed.count > 0 ? prepGroups.completed.sum / prepGroups.completed.count : null
+  const avgNone = prepGroups.none.count > 0 ? prepGroups.none.sum / prepGroups.none.count : null
+  const prepImpact = avgCompleted != null && avgNone != null ? avgCompleted - avgNone : null
+
+  const approvalColor = passRate != null && passRate > 60 ? 'success' : 'danger'
+
+  const kpis = [
+    {
+      title: 'Promedio Matemáticas',
+      value: mathAverage != null ? formatNumber(mathAverage, 1) : '-',
+      subtitle: 'sobre 100 puntos',
+      icon: '📐',
+      color: 'text',
+    },
+    {
+      title: 'Tasa de Aprobación',
+      value: passRate != null ? `${formatNumber(passRate, 1)}%` : '-',
+      subtitle: 'estudiantes con score ≥ 60',
+      icon: '✅',
+      color: approvalColor,
+    },
+    {
+      title: 'Mejora con Prep Course',
+      value: prepImpact != null ? `+${formatNumber(prepImpact, 1)} pts` : '-',
+      subtitle: 'vs estudiantes sin preparación',
+      icon: '📚',
+      color: 'success',
+    },
+    {
+      title: 'Total Estudiantes',
+      value: totalStudents ? formatNumber(totalStudents) : '-',
+      subtitle: 'en el dataset',
+      icon: '👥',
+      color: 'text',
+    },
+  ]
+
+  const educationData = aggregateByKey(data, 'parental_education', 'math_score', 'avg')
+
+  const genderMap = data.reduce((acc, row) => {
+    const gender = row.gender || 'N/A'
+    if (!acc[gender]) {
+      acc[gender] = {
+        gender,
+        math: 0,
+        reading: 0,
+        writing: 0,
+        count: 0,
+      }
+    }
+    acc[gender].math += row.math_score || 0
+    acc[gender].reading += row.reading_score || 0
+    acc[gender].writing += row.writing_score || 0
+    acc[gender].count += 1
+    return acc
+  }, {})
+
+  const genderData = Object.values(genderMap).map((g) => ({
+    gender: g.gender,
+    math: g.count ? g.math / g.count : 0,
+    reading: g.count ? g.reading / g.count : 0,
+    writing: g.count ? g.writing / g.count : 0,
+  }))
+
+  const scatterData = data.map((row) => ({
+    reading_score: row.reading_score,
+    writing_score: row.writing_score,
+    test_prep: row.test_prep,
+  }))
+
+  const ethnicityData = aggregateByKey(data, 'ethnicity', 'id', 'count')
+
+  const isEmpty = !loading && !error && data.length === 0
 
   return (
-    <div>
-      <header style={{ marginBottom: '1.5rem' }}>
-        <h1>{APP_CONFIG.title} Dashboard</h1>
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Dashboard de Rendimiento</h1>
+        <p className={styles.subtitle}>Análisis general del dataset de 1,000 estudiantes</p>
+        {error && (
+          <div className={styles.errorBanner}>
+            <span>No se pudo conectar con la base de datos. Verifica tu configuración.</span>
+            <div className={styles.errorActions}>
+              <button className={`${styles.button} ${styles.buttonPrimary}`} onClick={refetch}>
+                Reintentar
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
-      {/* KPI Cards - TODO: Replace values with real metrics from useSupabase */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '1rem',
-          marginBottom: '1.5rem',
-        }}
-      >
-        {MOCK_KPIS.map((k) => (
-          <KpiCard key={k.title} {...k} />
-        ))}
-      </div>
-
-      {/* Charts - TODO: Replace with useSupabase data and correct keys for your schema */}
       {loading ? (
-        <LoadingSpinner />
-      ) : (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-            gap: '1.5rem',
-          }}
-        >
-          <BarChartWidget data={barData} xKey="category" yKey="value" title="By Category" />
-          <LineChartWidget data={lineData} xKey="month" yKey="value" title="Trend Over Time" />
-          <PieChartWidget data={pieData} nameKey="name" valueKey="value" title="Distribution" />
-          <ScatterChartWidget data={scatterData} xKey="x" yKey="y" title="Correlation" />
+        <>
+          <div className={styles.skeletonGrid}>
+            <div className={styles.skeletonCard} />
+            <div className={styles.skeletonCard} />
+            <div className={styles.skeletonCard} />
+            <div className={styles.skeletonCard} />
+          </div>
+          <div className={styles.section}>
+            <div className={styles.row}>
+              <div className={styles.skeletonChart} />
+              <div className={styles.skeletonChart} />
+            </div>
+            <div className={styles.rowSplit}>
+              <div className={styles.skeletonChart} />
+              <div className={styles.skeletonChart} />
+            </div>
+          </div>
+        </>
+      ) : isEmpty ? (
+        <div className={styles.emptyState}>
+          <div className={styles.emptyIcon}>📂</div>
+          <div className={styles.emptyTitle}>No hay datos disponibles.</div>
+          <div className={styles.emptySubtitle}>
+            No hay datos disponibles. Carga el dataset para comenzar.
+          </div>
         </div>
+      ) : (
+        <>
+          <section className={styles.section}>
+            <div className={styles.kpiGrid}>
+              {kpis.map((kpi) => (
+                <KpiCard key={kpi.title} {...kpi} />
+              ))}
+            </div>
+          </section>
+
+          <section className={styles.section}>
+            <div className={styles.row}>
+              <div className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <h3 className={styles.cardTitle}>Rendimiento por Educación Familiar</h3>
+                  <p className={styles.cardSubtitle}>
+                    Promedio de math_score agrupado por nivel educativo de los padres
+                  </p>
+                </div>
+                {educationData.length === 0 ? (
+                  <LoadingSpinner />
+                ) : (
+                  <HorizontalBarChartWidget
+                    data={educationData}
+                    xKey="value"
+                    yKey="name"
+                    title={null}
+                    color="#4F46E5"
+                    height={280}
+                  />
+                )}
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <h3 className={styles.cardTitle}>Comparación de Scores por Materia</h3>
+                  <p className={styles.cardSubtitle}>
+                    Promedio de math, reading y writing por género
+                  </p>
+                </div>
+                {genderData.length === 0 ? (
+                  <LoadingSpinner />
+                ) : (
+                  <GroupedBarChartWidget
+                    data={genderData}
+                    xKey="gender"
+                    series={[
+                      { dataKey: 'math', name: 'Matemáticas', color: '#4F46E5' },
+                      { dataKey: 'reading', name: 'Lectura', color: '#10B981' },
+                      { dataKey: 'writing', name: 'Escritura', color: '#F59E0B' },
+                    ]}
+                    height={280}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className={styles.rowSplit}>
+              <div className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <h3 className={styles.cardTitle}>Reading vs Writing Score</h3>
+                  <p className={styles.cardSubtitle}>Coloreado por completar curso de preparación</p>
+                </div>
+                {scatterData.length === 0 ? (
+                  <LoadingSpinner />
+                ) : (
+                  <CategoryScatterChartWidget
+                    data={scatterData}
+                    xKey="reading_score"
+                    yKey="writing_score"
+                    categoryKey="test_prep"
+                    categories={[
+                      { value: 'completed', label: 'Completó prep', color: '#4F46E5' },
+                      { value: 'none', label: 'Sin prep', color: '#94A3B8' },
+                    ]}
+                    height={280}
+                  />
+                )}
+              </div>
+
+              <div className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <h3 className={styles.cardTitle}>Distribución por Grupo Étnico</h3>
+                  <p className={styles.cardSubtitle}>Porcentaje de estudiantes por grupo</p>
+                </div>
+                {ethnicityData.length === 0 ? (
+                  <LoadingSpinner />
+                ) : (
+                  <PieChartWidget
+                    data={ethnicityData}
+                    nameKey="name"
+                    valueKey="value"
+                    title={null}
+                    height={280}
+                  />
+                )}
+              </div>
+            </div>
+          </section>
+        </>
       )}
     </div>
   )

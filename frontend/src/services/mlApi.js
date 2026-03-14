@@ -11,20 +11,28 @@ const BASE_URL = import.meta.env.VITE_ML_API_URL || 'http://localhost:8000'
 
 /**
  * POST /predict - Sends input features and returns prediction.
- * @param {Object} inputData - Object with feature keys matching your model's input
- * @returns {Promise<{prediction: *, confidence: number, label?: string}>}
+ * The PRD and deployed Render service expect a flat JSON body:
+ * {
+ *   "gender": "female",
+ *   "ethnicity": "group C",
+ *   ...
+ * }
+ *
+ * @param {Object} inputData - Object with feature keys matching the model's input
+ * @returns {Promise<{prediction: *, confidence: number, label?: string, probabilities?: Object}>}
  */
 export async function predict(inputData) {
   try {
     const res = await fetch(`${BASE_URL}/predict`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ features: inputData }),
+      body: JSON.stringify(inputData),
     })
 
     if (!res.ok) {
       const errBody = await res.json().catch(() => ({}))
-      throw new Error(errBody.detail || `ML API error: ${res.status} ${res.statusText}`)
+      const detail = errBody.detail || errBody.error || errBody.message
+      throw new Error(detail || `ML API error: ${res.status} ${res.statusText}`)
     }
 
     return await res.json()

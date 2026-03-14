@@ -1,0 +1,426 @@
+ .page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  margin-top: 2rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.subtitle {
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--color-surface);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--color-border);
+  padding: 1.5rem 1.75rem;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.cardSubtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0.25rem 0 0;
+}
+
+.cardIcon {
+  font-size: 1.4rem;
+}
+
+.formGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.labelRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.tooltip {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pill {
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: #1e293b;
+}
+
+.pillSelected {
+  background: #4f46e5;
+  border-color: #4338ca;
+  color: #ffffff;
+}
+
+.select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  font-size: 0.875rem;
+}
+
+.scoreRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.scoreInputs {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.scoreNumber {
+  width: 80px;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  font-size: 0.85rem;
+}
+
+.scoreSlider {
+  flex: 1;
+}
+
+.scoreHint {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.toggleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.toggleTrack {
+  width: 42px;
+  height: 22px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.toggleTrackOn {
+  background: #10b981;
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.3);
+  transition: transform 0.15s ease;
+}
+
+.toggleThumbOn {
+  transform: translateX(18px);
+}
+
+.toggleLabel {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.primaryButton {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border: none;
+  background: #4f46e5;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.primaryButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: #ffffff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.apiBanner {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+  font-size: 0.85rem;
+}
+
+.resultCard {
+  padding: 1.5rem 1.75rem;
+}
+
+.resultEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.75rem;
+  color: #94a3b8;
+  padding: 1.5rem 0.5rem;
+}
+
+.resultIcon {
+  font-size: 2.2rem;
+}
+
+.resultText {
+  font-size: 0.9rem;
+  max-width: 320px;
+}
+
+.resultBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.resultBadgePass {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.resultBadgeFail {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.resultLabel {
+  font-size: 0.9rem;
+  color: #475569;
+  margin-top: 0.75rem;
+}
+
+.confidenceWrapper {
+  margin-top: 1rem;
+}
+
+.confidenceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 0.45rem;
+}
+
+.confidenceBarOuter {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.confidenceBarInner {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+
+.confidenceBarPass {
+  background: #22c55e;
+}
+
+.confidenceBarFail {
+  background: #ef4444;
+}
+
+.factors {
+  margin-top: 1.25rem;
+}
+
+.factorsTitle {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #0f172a;
+  margin-bottom: 0.4rem;
+}
+
+.factorsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.factorChip {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.historyCard {
+  margin-top: 1rem;
+}
+
+.historyList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.historyItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.6rem 0.4rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.8rem;
+}
+
+.historyMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.historyTime {
+  color: #94a3b8;
+}
+
+.historySummary {
+  color: #475569;
+}
+
+.historyEmpty {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.infoCard {
+  background: #eef2ff;
+  border-radius: 12px;
+  border: 1px solid #c7d2fe;
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+}
+
+.infoTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4338ca;
+  margin: 0 0 0.35rem;
+}
+
+.infoText {
+  font-size: 0.8rem;
+  color: #4338ca;
+}
+
+.errorBanner {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  font-size: 0.85rem;
+}
+
